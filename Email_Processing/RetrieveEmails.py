@@ -1,72 +1,41 @@
-import imaplib
-import email
+from imap_tools import MailBox, AND
 from email.header import decode_header
 import pandas as pd
+from bs4 import BeautifulSoup
 
 # Email account credentials
 IMAP_SERVER = 'imap.gmail.com'
-EMAIL_ACCOUNT = 'wilsonpaulrajd@gmail.com'
-PASSWORD = 'aqvr uqvy wmlf ulst'
+EMAIL_ACCOUNT = 'your_email@gmail.com'
+PASSWORD = 'your_password'
 
 def fetch_emails():
-    # Connect to the server
-    mail = imaplib.IMAP4_SSL(IMAP_SERVER)
-    
-    # Log in to the account
-    mail.login(EMAIL_ACCOUNT, PASSWORD)
-    
-    # Select the mailbox you want to use
-    mail.select('inbox')
-    
-    # Search for all emails in the inbox
-    status, messages = mail.search(None, 'ALL')
-    
-    # Convert messages to a list of email IDs
-    email_ids = messages[0].split()
-    
-    # Create a list to store email data
     email_data = []
     
-    for email_id in email_ids[:5]:
-        # Fetch the email by ID
-        status, msg_data = mail.fetch(email_id, '(RFC822)')
-        
-        for response_part in msg_data:
-            if isinstance(response_part, tuple):
-                msg = email.message_from_bytes(response_part[1])
-                
-                # Decode the email subject
-                subject, encoding = decode_header(msg['Subject'])[0]
-                if isinstance(subject, bytes):
-                    subject = subject.decode(encoding if encoding else 'utf-8')
-                
-                # Decode the email sender
-                from_ = msg.get('From')
-                
-                # Extract email body
-                body = ""
-                if msg.is_multipart():
-                    for part in msg.walk():
-                        content_type = part.get_content_type()
-                        content_disposition = str(part.get('Content-Disposition'))
-                        if 'attachment' not in content_disposition:
-                            part_payload = part.get_payload(decode=True)
-                            if part_payload:
-                                body = part_payload.decode(errors='ignore')  # Handle decoding errors
-                else:
-                    part_payload = msg.get_payload(decode=True)
-                    if part_payload:
-                        body = part_payload.decode(errors='ignore')  # Handle decoding errors
-                
-                email_data.append({
-                    'from': from_,
-                    'subject': subject,
-                    'body': body
-                })
-    
-    # Close the connection and logout
-    mail.close()
-    mail.logout()
+    # Connect and login to the email account
+    with MailBox(IMAP_SERVER).login(EMAIL_ACCOUNT, PASSWORD) as mailbox:
+        # Fetch all emails from the inbox
+        for msg in mailbox.fetch(AND(all=True)):
+            # Decode the email subject
+            subject, encoding = decode_header(msg.subject)[0]
+            if isinstance(subject, bytes):
+                subject = subject.decode(encoding if encoding else 'utf-8')
+            
+            # Decode the email sender
+            from_ = msg.from_
+            
+            # Extract email body
+            body = ""
+            if msg.html:
+                soup = BeautifulSoup(msg.html, "html.parser")
+                body = soup.get_text()
+            elif msg.text:
+                body = msg.text
+            
+            email_data.append({
+                'from': from_,
+                'subject': subject,
+                'body': body.strip()  # Strip leading/trailing whitespace
+            })
     
     return email_data
 

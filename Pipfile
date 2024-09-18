@@ -4,6 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+pandas = "*"
+nltk = "*"
+spacy = "*"
+django = "*"
+djangorestframework = "*"
+requests = "*"
+imap-tools = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 
