@@ -24,12 +24,12 @@ def fetch_emails():
             from_ = msg.from_
             
             # Extract email body
-            # body = ""
-            # if msg.html:
-            #     soup = BeautifulSoup(msg.html, "html.parser")
-            #     body = soup.get_text()
-            # elif msg.text:
-            body = msg.text
+            body = ""
+            if msg.html:
+                soup = BeautifulSoup(msg.html, "html.parser")
+                body = soup.get_text()
+            elif msg.text:
+                body = msg.text
             
             email_data.append({
                 'from': from_,
@@ -37,10 +37,6 @@ def fetch_emails():
                 'body': body.strip()  # Strip leading/trailing whitespace
             })
     
+
     return email_data
-
-# Fetch emails and convert to DataFrame
-email_data = fetch_emails()
-df = pd.DataFrame(email_data)
-
-print(df)
+    
