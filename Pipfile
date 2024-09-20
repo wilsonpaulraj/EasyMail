@@ -12,6 +12,7 @@ djangorestframework = "*"
 requests = "*"
 imap-tools = "*"
 beautifulsoup4 = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
