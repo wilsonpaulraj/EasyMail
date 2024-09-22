@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 # Email account credentials
 IMAP_SERVER = 'imap.gmail.com'
 EMAIL_ACCOUNT = 'wilsonpaulrajd@gmail.com'
-PASSWORD = 'rtrx veke jtsc asux'
+PASSWORD = 'rtrx veke jtsc acux'
 
 def fetch_emails():
     email_data = []

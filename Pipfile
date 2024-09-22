@@ -13,6 +13,10 @@ requests = "*"
 imap-tools = "*"
 beautifulsoup4 = "*"
 scikit-learn = "*"
+transformers = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
 
 [dev-packages]
 
