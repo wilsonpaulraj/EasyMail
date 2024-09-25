@@ -12,7 +12,7 @@ email_data = [email['body'] for email in extract_email_parts(emails)]
 summarizer = pipeline('summarization')
 
 # Summarize the email data
-summarized_text = summarizer(email_data, max_length=30, min_length=5, do_sample=False)
+summarized_text = summarizer(email_data, max_length=30, min_length=3,  do_sample=False)
 
 # Print summarized text
 for i, summary in enumerate(summarized_text):
