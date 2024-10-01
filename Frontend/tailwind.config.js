@@ -1,20 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        primary: '#4A90E2',
-        secondary: '#50E3C2',
-        accent: '#F5A623',
-        lightGray: '#F4F7F9',
+        primary: '#FF6F61',    // coral red
+        secondary: '#FFCCBC',  // light orange
+        accent: '#FF8A65',     // peach
+        highlight: '#FF7043',  // deep orange
+        background: '#FFE0B2', // light orange background
         darkGray: '#333333',
+        lightGray: '#F2F2F2',
       },
     },
   },
   plugins: [],
-}
-
+};
