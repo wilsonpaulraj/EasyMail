@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'Lexend';
+    src: url('/src/assets/Fonts/Lexend-VariableFont_wght.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Monsterrat';
+    src: url('/src/assets/Fonts/Montserrat-VariableFont_wght.ttf');
+    font-weight: normal;
+    font-style: normal;
+}

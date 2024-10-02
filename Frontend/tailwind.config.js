@@ -3,14 +3,16 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        lexend: ['lexend', 'sans-serif'],
+        monsterrat: ['monsterrat, sans-serif']
+      },
       colors: {
-        primary: '#FF6F61',    // coral red
-        secondary: '#FFCCBC',  // light orange
-        accent: '#FF8A65',     // peach
-        highlight: '#FF7043',  // deep orange
-        background: '#FFE0B2', // light orange background
-        darkGray: '#333333',
-        lightGray: '#F2F2F2',
+        primary: '#E55938',    // orange (primary)
+        secondary: '#638B98',  // blue-gray
+        accent: '#5B7C81',     // teal
+        highlight: '#564D4E',  // dark gray
+        background: '#F5F5F5', // light gray
       },
     },
   },
