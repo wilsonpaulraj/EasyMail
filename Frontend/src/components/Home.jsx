@@ -35,21 +35,15 @@ const Home = () => {
           </div>
         </div>
         <div className="flex flex-col gap-10 items-center justify-center">
-          <div>
-
-            <h1 className="text-5xl font-lexend text-highlight font-bold text-center">Features</h1>
-          </div>
+         
           <div className="flex justify-center gap-5">
 
-            <div className="bg-slate-200 rounded-xl w-96 h-[400px]">
+           
+            <div className="rounded-xl w-96 h-[400px]">
+              
 
             </div>
-            <div className="bg-slate-200 rounded-xl w-96 h-[400px]">
-
-            </div>
-            <div className="bg-slate-200 rounded-xl w-96 h-[400px]">
-
-            </div>
+           
           </div>
 
         </div>
