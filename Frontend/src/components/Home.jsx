@@ -1,7 +1,10 @@
 import React from "react";
 import "../customstyles.css";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="overflow-x-hidden bg-background">
       <div className="min-h-screen w-full max-w-full px-24 py-10">
@@ -49,38 +52,52 @@ const Home = () => {
           <div className="flex flex-wrap justify-center gap-5">
             <div className="flex w-96 flex-col items-center rounded-xl">
               <img
-                className="h-80 w-80"
+                className="m-0 h-80 w-80 p-0 opacity-70"
                 src="/email-classification.svg"
                 alt=""
               />
-              <p className="w-10/12 text-wrap text-center font-monsterrat text-lg">
+              <p className="mb-12 h-28 w-11/12 text-wrap text-center font-monsterrat text-lg">
                 Effortlessly sort your emails into spam, promotions, and
                 essentials with just one click—let us do the heavy lifting for
                 you!
               </p>
+              <button
+                onClick={(e) => {
+                  navigate("/process-emails");
+                }}
+                className="h-10 w-48 rounded-md bg-primary p-2 font-monsterrat font-bold text-white"
+              >
+                Try now
+              </button>
             </div>
             <div className="flex w-96 flex-col items-center rounded-xl">
               <img
-                className="h-80 w-80"
+                className="h-80 w-80 opacity-70"
                 src="/email-summarization.svg"
                 alt=""
               />
-              <p className="w-10/12 text-wrap text-center font-monsterrat text-lg">
+              <p className="mb-12 h-28 w-10/12 text-wrap text-center font-monsterrat text-lg">
                 Don’t stress about the piles of emails in your inbox! Get a
                 quick summary of all your messages in just seconds!
               </p>
+              <button className="h-10 w-48 rounded-md bg-primary p-2 font-monsterrat font-extrabold text-white">
+                Try now
+              </button>
             </div>
             <div className="flex w-96 flex-col items-center rounded-xl">
               <img
-                className="h-80 w-80"
+                className="h-80 w-80 opacity-70"
                 src="/email-prioritization.svg"
                 alt=""
               />
-              <p className="w-10/12 text-wrap text-center font-monsterrat text-lg">
+              <p className="mb-12 h-28 w-11/12 text-wrap text-center font-monsterrat text-lg">
                 Wouldn't it be great if your inbox were organized and sorted?
-                Well, guess who's an expert at that! EasyMail expertly organizes
-                your inbox by prioritizing your most important emails.
+                EasyMail expertly organizes your inbox by prioritizing your most
+                important emails.
               </p>
+              <button className="h-10 w-48 rounded-md bg-primary p-2 font-monsterrat font-bold text-white">
+                Try now
+              </button>
             </div>
           </div>
         </div>

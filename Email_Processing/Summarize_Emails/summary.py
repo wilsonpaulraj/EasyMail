@@ -1,92 +1,89 @@
+import re
 import pandas as pd
+import nltk
 from nltk.corpus import stopwords
-from nltk.cluster.util import cosine_distance
+from nltk.tokenize import word_tokenize
+from transformers import pipeline
+import textwrap
+import requests
+from bs4 import BeautifulSoup
+
+# Import custom modules for fetching and cleaning emails
 from fetch_emails import fetch_emails
 from clean_emails import extract_email_parts
-import networkx as nx
-import numpy as np
-import re
 
+# Initialize the summarization pipeline
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
-def clean_sentence(sentence):
-    return re.sub(r'[^A-Za-z]', ' ', sentence)
+# Function to extract keywords from the text
+def extract_keywords(text, top_n=5):
+    words = word_tokenize(re.sub(r'[^A-Za-z\s]', '', text.lower()))
+    stop_words = set(stopwords.words('english'))
+    filtered_words = [word for word in words if word not in stop_words]
+    freq = nltk.FreqDist(filtered_words)
+    most_common = freq.most_common(top_n)
+    return [word for word, _ in most_common]
 
+# Function to split body into chunks
+def split_into_chunks(text, max_length):
+    return textwrap.wrap(text, max_length)
 
-def sentence_similarity(sent1, sent2, stop_words=None):
-    if stop_words is None:
-        stop_words = []
+# Function to summarize email using Hugging Face summarizer
+def summarize_email(subject, body):
+    max_input_length = 1024  # Max input length for the model
+    chunk_size = 1000  # Adjust this based on the max input length and some buffer
 
-    sent1 = clean_sentence(sent1)
-    sent2 = clean_sentence(sent2)
+    # Split body into chunks
+    body_chunks = split_into_chunks(body, chunk_size)
 
-    sent1 = [w.lower() for w in sent1.split() if w.lower() not in stop_words]
-    sent2 = [w.lower() for w in sent2.split() if w.lower() not in stop_words]
+    # Summarize each chunk and combine the results
+    summary = ''
+    for chunk in body_chunks:
+        summary_chunk = summarizer(chunk, max_length=100, min_length=30, do_sample=False)[0]['summary_text']
+        summary += summary_chunk + ' '
 
-    all_words = list(set(sent1 + sent2))
+    return summary.strip()
 
-    vector1 = [0] * len(all_words)
-    vector2 = [0] * len(all_words)
+# Function to extract important links from the email body
+def extract_links(text):
+    soup = BeautifulSoup(text, 'html.parser')
+    links = [a['href'] for a in soup.find_all('a', href=True)]
+    return links
 
-    for w in sent1:
-        vector1[all_words.index(w)] += 1
-
-    for w in sent2:
-        vector2[all_words.index(w)] += 1
-
-    return 1 - cosine_distance(vector1, vector2)
-
-
-def build_similarity_matrix(sentences, stop_words):
-    similarity_matrix = np.zeros((len(sentences), len(sentences)))
-    for idx1 in range(len(sentences)):
-        for idx2 in range(len(sentences)):
-            if idx1 == idx2:
-                continue
-            similarity_matrix[idx1][idx2] = sentence_similarity(sentences[idx1], sentences[idx2], stop_words)
-
-    return similarity_matrix
-
-
-def summarize(sentences, top_n=4):
-    stop_words = stopwords.words('english')
-    summarized_text = []
-
-    sentence_similarity_matrix = build_similarity_matrix(sentences, stop_words)
-
-    sentence_similarity_graph = nx.from_numpy_array(sentence_similarity_matrix)
-    scores = nx.pagerank(sentence_similarity_graph)
-
-    ranked_sentences = sorted(((scores[i], s) for i, s in enumerate(sentences)), reverse=True)
-
-    for i in range(min(top_n, len(ranked_sentences))):
-        summarized_text.append(ranked_sentences[i][1])
-
-    return " ".join(summarized_text)
-
-
-emails = fetch_emails()
+# Fetch and process emails
+emails = fetch_emails('wilsonpaulrajd@gmail.com', 'rtrx veke jtsc acux', '2024-9-12', '2024-10-12')
 email_data = extract_email_parts(emails)
 
-# Convert email_data to a DataFrame
+# Create DataFrame for email data
 email_df = pd.DataFrame(email_data)
 
+# Summarize emails and extract important links
 summarized_emails = []
-
 for index, email in email_df.iterrows():
     subject = email['subject']
     body = email['body']
     sender = email['sender']
 
-    sentences = body.split(". ")
-    summarized_text = summarize(sentences)
-    summarized_emails.append({"subject": subject, "body": summarized_text, "sender": sender})
+    summarized_text = summarize_email(subject, body)
+    important_links = extract_links(body)
 
-# Write the summarized emails to a file with UTF-8 encoding
+    summarized_emails.append({
+        "subject": subject,
+        "body": summarized_text,
+        "sender": sender,
+        "links": important_links
+    })
+
+# Write summarized emails to a text file
 with open('summarized_emails.txt', 'w', encoding='utf-8') as file:
     for email in summarized_emails:
-        file.write(email['subject'] + "\n")
-        file.write(email['body'] + "\n")
-        file.write(email['sender'] + "\n")
+        file.write(f"Sender: {email['sender']}\n")
+        file.write(f"Subject: {email['subject']}\n")
+        file.write(f"Summary: {email['body']}\n")
+        if email['links']:
+            file.write("Links:\n")
+            for link in email['links']:
+                file.write(f"{link}\n")
         file.write("=" * 120 + "\n")
 
 print("Summarization complete. Check the 'summarized_emails.txt' file.")
